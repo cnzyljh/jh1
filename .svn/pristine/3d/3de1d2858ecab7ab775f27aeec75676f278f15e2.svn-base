@@ -1,0 +1,804 @@
+/*
+ * 
+ */
+package cn.rojao.entity;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.alibaba.fastjson.JSON;
+
+import cn.rojao.redis.pojo.MaterialRedis;
+import cn.rojao.redis.pojo.ScheduleRedis;
+import cn.rojao.util.MD5Util;
+
+/**
+ * simple introduction
+ *
+ * <p>
+ * detailed comment
+ * @author qing.ye 2016年9月28日
+ * @see
+ * @since 1.0
+ */
+@Component
+public class Item
+{
+	/**广告位编码**/
+    private String advId;
+    /**广告位子类型编码**/
+    private String advSubType;
+    
+    private String advContentKey;
+    /**广告平台侧的视频广告内容ID，没有为空。**/
+    private String contentId;
+    /**素材类型，图片（1）、和文本（2），视频（3）、网页（4）、zip包（6）**/
+    private Long assetType;
+    /**广告素材所在路径（如果是IPQAM播放的VOD点播系统，视频素材该字段为空），文字时该值为空**/
+    private String advURL;
+    /**素材超链接，点击广告图片的详情时使用。没有为空**/
+    private String href;
+    /**素材MD5验证码，如果值为0，不校验。对文件内容校验**/
+    private String mD5;
+    /**文字滚动内容。多条以**/
+    private String context;
+    /**非视频广告的显示持续时间，单位秒。如果是视频广告，则是视频广告实际时长。**/
+    private Long duration;
+    /**显示次数，默认显示一次，显示多次时，间隔时间由interval参数控制**/
+    private Long displayTimes;
+    /**显示多次情况下的两次显示之间的间隔，单位秒，默认间隔为0。**/
+    private Long interval;
+    /**广告显示开始时间可以选择相对时间（比如观看了视频10分钟时）或绝对时间（观看到视频的第10分钟），缺省为相对时间相对时间方式（0），绝对时间方式（1)**/
+    private Long offsetType;
+    /**广告显示起始时间便偏移，0片头，-1片尾，其他相对时间偏移的秒数，只对视频广告或泡泡有效。**/
+    private Long offset;
+    private Long reportFlag;
+    /****/
+    private Integer xPosition;
+
+    private Integer yPosition;
+    
+    private Long mHeight;
+    
+    private Long mWidth;
+    
+    /**动画效果**/
+    private Integer  animation;
+    
+    /**跑马灯速度，每秒多少像素**/
+    private Long speed;
+    
+    /**方向1 右到左2 左到右3 上到下  4 下到上**/
+    private Long direct;
+    
+    private String channelIds;
+    
+    private Long displayInvalid;
+    
+    /**字幕背景颜色**/
+    private String backgroudColor;
+    
+    /**透明度（0-255）**/
+    private Integer transparent;
+    
+    /**视频广告显示方式：Fill（0）或者Replace（0），视频没有该字段表示为0**/
+    private Long videoStyle;
+    
+    /**透明度视频广告是否可跳过，不可跳过（0），可跳过（1），缺省为不可跳过**/
+    private Integer skip;
+    
+    /**投放ID，用于省网AD-i5接口**/
+    private Long scheduleId;
+    
+    private String materialName;
+    
+    private String materialId;
+    
+    /**素材视频码率**/
+    private String bitrate;
+    
+    /**广告位外部编码**/
+    private String parsestr;
+    
+    /**广告位创建时间**/
+    private String positionCreateTime; 
+    
+    /**应用跳转key**/
+    private String sourceKey;
+    
+    /**跳转包名**/
+    private String packageName;
+    
+    /**跳转类名**/
+    private String className;
+
+    /**信息显示上报的url，以get方式调用该接口。如广告无须上报，该字段为空或没有该字段**/
+    private String showUrl;
+    
+    /**终端点击超链接信息显示上报的url，以get方式调用该接口。如果没有超链接，该字段为空或没有该字段**/
+    private String clickUrl;
+    
+    /**上报参数，用于合成上报的url，不返回给终端**/
+    private String reportParam;
+    
+    private Map<String, String> extInfos;
+    
+    public Item(MaterialRedis materialRedis, ScheduleRedis scheduleRedis,AdvREQT request,String nginxPath,String vedioPath ,String picPath,String reportUrl){
+    	this.advId = scheduleRedis.getAdvId();
+    	if(!"2".equals(materialRedis.getType())){
+    	    if(materialRedis.getHlsCut() != null && materialRedis.getHlsCut().intValue() == 1){
+                this.advURL = nginxPath + materialRedis.getM3u8Path();
+                
+                String urlsString[]  = materialRedis.getUrl().split("/");//对视频的地址进行处理，交由电信进行分发
+                String realUrl = urlsString[urlsString.length-1];
+                if(realUrl!=null){
+                	String ttString[] = realUrl.split("\\.");
+                	this.advURL = vedioPath+ttString[0]+"/"+ttString[0]+".m3u8";
+                }
+                
+            }else{
+                String url = materialRedis.getUrl();
+                if(url!=null && (url.startsWith("http:") || url.startsWith("https:") || url.startsWith("rtsp:") || url.startsWith("VOD:"))){
+                    this.advURL = materialRedis.getUrl();
+                }else{
+                    this.advURL = nginxPath + materialRedis.getUrl();  
+                    
+                    if("1".equals(materialRedis.getType())||"3".equals(materialRedis.getType())||"5".equals(materialRedis.getType())){
+                        String urlsString[]  = materialRedis.getUrl().split("/");//对图片和视频和音频返回的地址进行处理，交由电信进行分发
+                        String realUrl = urlsString[urlsString.length-1];
+                        if(realUrl!=null){
+                        	String ttString[] = realUrl.split("\\.");
+                        	if(ttString.length > 1){
+                        		if("jpg".equals(ttString[1])||"jpeg".equals(ttString[1])||"png".equals(ttString[1])||"gif".equals(ttString[1])){
+                        			this.advURL =picPath+realUrl;
+                        		}
+                        		if("ts".equals(ttString[1])||"hls".equals(ttString[1])||"mp4".equals(ttString[1])||"mp3".equals(ttString[1])){
+                        			this.advURL = vedioPath+realUrl;
+                        		}                    	
+                        	}
+                        }
+                    } 
+                }
+            }
+    	}
+    	this.advSubType = scheduleRedis.getAdvSonType();
+    	//this.contentId = scheduleRedis.getContents();
+    	this.assetType = Long.parseLong(materialRedis.getType());
+    	
+    	this.href = materialRedis.getHyper();
+    	this.context = materialRedis.getContent();
+    	if("3".equals(materialRedis.getType()) && materialRedis.getDuration() != null){
+    	    this.duration = Long.valueOf(materialRedis.getDuration());
+    	}else{
+    	    this.duration = scheduleRedis.getDuration();
+    	}
+    	
+    	this.displayTimes = scheduleRedis.getTimes()==null?-1l:scheduleRedis.getTimes();
+    	this.interval = scheduleRedis.getInterval()==null?-1l:scheduleRedis.getInterval();
+    	this.skip = scheduleRedis.getSkip();
+    	this.transparent = scheduleRedis.getTransparent();
+    	this.videoStyle = scheduleRedis.getVideoPlaytype();
+    	if("2".equals(materialRedis.getType())){
+    	    this.backgroudColor = scheduleRedis.getBgcolor();
+    	}else{
+    	    this.backgroudColor = "";
+    	}
+    	
+    	this.animation = scheduleRedis.getAnimation();
+    	this.speed = scheduleRedis.getSpeed();
+    	this.direct = scheduleRedis.getDirection();
+    	if(StringUtils.isNotEmpty(scheduleRedis.getDomain())){
+    		String[] sizes = scheduleRedis.getDomain().split("\\*");
+    		this.mWidth = Long.parseLong(sizes[0]);
+    		this.mHeight = Long.parseLong(sizes[1]);
+    	}
+    	this.xPosition = scheduleRedis.getXPosition();
+    	this.yPosition = scheduleRedis.getYPosition();
+    	//this.mD5 = materialRedis.getCheckCode();
+    	this.mD5 = MD5Util.getMD5(this.advURL);
+    	this.scheduleId = Long.parseLong(scheduleRedis.getTaskId());
+    	this.materialName = materialRedis.getMaterialName();
+    	this.materialId = materialRedis.getMaterialId();
+    	this.offset = scheduleRedis.getOffset()==null?-1l:scheduleRedis.getOffset();
+    	this.offsetType = scheduleRedis.getOffsetType();
+    	
+    	this.bitrate = materialRedis.getBitrate();
+    	
+    	this.parsestr = scheduleRedis.getParsestr();
+    	
+    	this.positionCreateTime =scheduleRedis.getPositionCreateTime();
+    	
+    	this.sourceKey = materialRedis.getSourceKey();
+    	this.packageName = materialRedis.getPackageName();
+    	this.className = materialRedis.getClassName();
+    	
+    	this.advContentKey = buildAdvContentKey(scheduleRedis.getTaskId(), materialRedis.getMaterialId(), 
+    	        request.getDeviceType(), null, request.getContentId(), request.getChannelId(), 
+    	        request.getCatagoryId(), request.getUserGroups(), request.getFeatures(), 
+    	        request.getRegionCode(), request.getAssetClass(), scheduleRedis.getAdsFlag(), 
+    	        request.getNetworkId(),request.getProviderId(),request.getFolderContentId());
+    	
+    	String reportParam = buildReportParam(scheduleRedis.getAdsFlag(),request,scheduleRedis,materialRedis);
+    	this.reportParam = reportParam;
+    	
+    	this.showUrl = reportUrl + "?" + reportParam + "0";
+    	if(StringUtils.isNotEmpty(materialRedis.getHyper())){
+    		this.clickUrl = reportUrl + "?" + reportParam + "1";
+    	}
+    }
+    private String buildReportParam(AdsFlag adsFlag,AdvREQT request,ScheduleRedis scheduleRedis,MaterialRedis materialRedis)
+    {
+        String result = "";
+        String channelId = "",providerId = "",catagoryId = "",contentId = "",folderContentId = "",keyword = "";
+        if(adsFlag != null){
+        	if(adsFlag.isHasChannel()){
+        		channelId = request.getChannelId();
+        	}
+        	if(adsFlag.isHasProvider()){
+        		providerId = request.getProviderId();
+        	}
+        	if(adsFlag.isHasCategory()){
+        		if(adsFlag.getMatchSet() != null){
+        			Set<String> set = adsFlag.getMatchSet().get("category");
+        			if(set != null){
+        				String setStr = StringUtils.join(set, ",");
+        				catagoryId = setStr;
+        			}
+        		}
+        	}
+        	if(adsFlag.isHasContent()){
+        		contentId = request.getContentId();
+        	}
+        	if(adsFlag.isHasFolderContent()){
+        		folderContentId = request.getFolderContentId();
+        	}
+        	if(adsFlag.isHasKeyword()){
+        		if(adsFlag.getMatchSet() != null){
+        			Set<String> set = adsFlag.getMatchSet().get("keyword");
+        			if(set != null){
+        				String setStr = StringUtils.join(set, ",");
+        				keyword = setStr;
+        			}
+        		}
+        	}
+        }
+        String deviceCode = request.getDeviceCode() == null ? "" : request.getDeviceCode();
+        String deviceType = request.getDeviceType() == null ? "" : request.getDeviceType();
+        String networkId = request.getNetworkId() == null ? "" : request.getNetworkId();
+        String regionCode = request.getRegionCode() == null ? "" : request.getRegionCode();
+        String strategyId = scheduleRedis.getStrategyId() == null ? "" : scheduleRedis.getStrategyId().toString();
+        String duration = scheduleRedis.getDuration() == null ? "" : scheduleRedis.getDuration().toString();
+        result = deviceCode + "|" + deviceType + "|" + networkId + "|" + regionCode + "|0x0f|"
+    			+ request.getAdvId() + "^" + scheduleRedis.getTaskId() + "^" + scheduleRedis.getCreativeId() + "^" + materialRedis.getMaterialId()  
+    			+ "^" + strategyId + "^" + scheduleRedis.getOrderId() + "^" + channelId + "^" + providerId + "^"
+    			+ catagoryId + "^" + contentId + "^" + folderContentId + "^" + keyword + "^" + duration + "^";
+        
+        return result;
+
+    }
+    
+    private String buildAdvContentKey(String scheduleId,
+            String materialId,String deviceType, String terminalType, String contentId,
+            String channelId, String catagoryId, String userGroupId,String feature,
+            String regionId,String contentType,AdsFlag adsFlag,String networkId,String providerId,String folderContentId)
+    {
+        String result = "";
+        scheduleId = scheduleId == null ? "" : scheduleId;
+        materialId = materialId == null ? "" : materialId;
+        networkId = networkId == null ? "" : networkId;
+        
+        if(!adsFlag.isHasDeviceType()){
+            deviceType = "";
+        }
+        terminalType = terminalType == null ? "" : terminalType;
+        if(!adsFlag.isHasTerminalType()){
+            terminalType = "";
+        }  
+        String contentCode = "";
+        contentId = contentId == null ? "" : contentId;
+        folderContentId = folderContentId == null ? "" : folderContentId;
+        if(adsFlag.isHasContent()){
+            contentCode = contentId;
+        }
+        if(adsFlag.isHasFolderContent()){
+            contentCode = folderContentId;
+        }
+        channelId = channelId == null ? "" : channelId;
+        if(!adsFlag.isHasChannel()){
+            channelId = "";
+        }
+        catagoryId = catagoryId == null ? "" : catagoryId;
+        if(!adsFlag.isHasCategory()){
+            catagoryId = "";
+        }
+        userGroupId = userGroupId == null ? "" : userGroupId;
+        if(adsFlag.isHasUserGroup()){
+            Map<String, Set<String>> map = adsFlag.getMatchSet();
+            if(map!=null && "".equals(userGroupId)){
+                Set<String> userGroup = map.get("userGroup");
+                userGroupId = setToStr(userGroup);
+            }
+        }else{
+            userGroupId = "";
+        }
+        feature = feature == null ? "" : feature;
+        if(adsFlag.isHasFeature()){
+            Map<String, Set<String>> map = adsFlag.getMatchSet();
+            if(map!=null && "".equals(feature)){
+                Set<String> featureSet = map.get("feature");
+                feature = setToStr(featureSet);
+            }
+        }else{
+            feature = "";
+        }
+        regionId = regionId==null ? "" : regionId;
+        contentType = contentType==null?"":contentType;
+        if(!adsFlag.isHasAssetClass()){
+            contentType = "";
+        }
+        providerId = providerId==null?"":providerId;
+        if(!adsFlag.isHasProvider()){
+            providerId = ""; 
+        }
+        userGroupId=userGroupId.replace("|", "");
+        feature=feature.replace("|", "");
+        result = "3#" + scheduleId + "#" + regionId + "#" + networkId + "&&9^" + deviceType + "^" + terminalType
+                + "^" + contentCode + "^" + channelId + "^" + catagoryId + "^"
+                + userGroupId + "^" + feature + "^" + materialId + "^" + providerId;
+        return result;
+
+    }
+    
+    public Item(){
+    	
+    }
+
+    public String getAdvId()
+    {
+        return advId;
+    }
+
+    public void setAdvId(String advId)
+    {
+        this.advId = advId;
+    }
+
+    public String getAdvContentKey()
+    {
+        return advContentKey;
+    }
+
+    public void setAdvContentKey(String advContentKey)
+    {
+        this.advContentKey = advContentKey;
+    }
+
+    public Long getAssetType()
+    {
+        return assetType;
+    }
+
+    public void setAssetType(Long assetType)
+    {
+        this.assetType = assetType;
+    }
+
+    public String getAdvURL()
+    {
+        return advURL;
+    }
+
+    public void setAdvURL(String advURL)
+    {
+        this.advURL = advURL;
+    }
+
+    public String getHref()
+    {
+        return href;
+    }
+
+    public void setHref(String href)
+    {
+        this.href = href;
+    }
+
+    public String getMD5()
+    {
+        return mD5;
+    }
+
+    public void setMD5(String mD5)
+    {
+        this.mD5 = mD5;
+    }
+
+    public String getContext()
+    {
+        return context;
+    }
+
+    public void setContext(String context)
+    {
+        this.context = context;
+    }
+
+    public Long getOffset()
+    {
+        return offset;
+    }
+
+    public void setOffset(Long offset)
+    {
+        this.offset = offset;
+    }
+
+    public Long getDuration()
+    {
+        return duration;
+    }
+
+    public void setDuration(Long duration)
+    {
+        this.duration = duration;
+    }
+
+    public Long getDisplayTimes()
+    {
+        return displayTimes;
+    }
+
+    public void setDisplayTimes(Long displayTimes)
+    {
+        this.displayTimes = displayTimes;
+    }
+
+    public Long getInterval()
+    {
+        return interval;
+    }
+
+    public void setInterval(Long interval)
+    {
+        this.interval = interval;
+    }
+
+    public Long getReportFlag()
+    {
+        return reportFlag;
+    }
+
+    public void setReportFlag(Long reportFlag)
+    {
+        this.reportFlag = reportFlag;
+    }
+
+    public Map<String, String> getExtInfos()
+    {
+        return extInfos;
+    }
+
+    public void setExtInfos(Map<String, String> extInfos)
+    {
+        this.extInfos = extInfos;
+    }
+    
+    public String getContentId()
+    {
+        return contentId;
+    }
+
+    public void setContentId(String contentId)
+    {
+        this.contentId = contentId;
+    }
+
+    
+    public String getAdvSubType()
+    {
+        return advSubType;
+    }
+
+    public void setAdvSubType(String advSubType)
+    {
+        this.advSubType = advSubType;
+    }
+
+    
+    
+
+    public Integer getXPosition()
+    {
+        return xPosition;
+    }
+
+    public void setXPosition(Integer xPosition)
+    {
+        this.xPosition = xPosition;
+    }
+
+    public Integer getYPosition()
+    {
+        return yPosition;
+    }
+
+    public void setYPosition(Integer yPosition)
+    {
+        this.yPosition = yPosition;
+    }
+
+    public Integer getAnimation()
+    {
+        return animation;
+    }
+
+    public void setAnimation(Integer animation)
+    {
+        this.animation = animation;
+    }
+
+    public Long getSpeed()
+    {
+        return speed;
+    }
+
+    public void setSpeed(Long speed)
+    {
+        this.speed = speed;
+    }
+
+    public Long getDirect()
+    {
+        return direct;
+    }
+
+    public void setDirect(Long direct)
+    {
+        this.direct = direct;
+    }
+
+    public String getChannelIds()
+    {
+        return channelIds;
+    }
+
+    public void setChannelIds(String channelIds)
+    {
+        this.channelIds = channelIds;
+    }
+    
+
+	public Long getMHeight()
+	{
+		return mHeight;
+	}
+
+	public void setMHeight(Long mHeight)
+	{
+		this.mHeight = mHeight;
+	}
+
+	public Long getMWidth()
+	{
+		return mWidth;
+	}
+
+	public void setMWidth(Long mWidth)
+	{
+		this.mWidth = mWidth;
+	}
+	
+	public Long getDisplayInvalid() 
+	{
+		return displayInvalid;
+	}
+
+	public void setDisplayInvalid(Long displayInvalid) 
+	{
+		this.displayInvalid = displayInvalid;
+	}
+	
+	public String getBackgroudColor() {
+		return backgroudColor;
+	}
+
+	public void setBackgroudColor(String backgroudColor) {
+		this.backgroudColor = backgroudColor;
+	}
+	
+	public String getmD5() {
+		return mD5;
+	}
+
+	public void setmD5(String mD5) {
+		this.mD5 = mD5;
+	}
+
+	public Long getOffsetType() {
+		return offsetType;
+	}
+
+	public void setOffsetType(Long offsetType) {
+		this.offsetType = offsetType;
+	}
+
+	public Integer getxPosition() {
+		return xPosition;
+	}
+
+	public void setxPosition(Integer xPosition) {
+		this.xPosition = xPosition;
+	}
+
+	public Integer getyPosition() {
+		return yPosition;
+	}
+
+	public void setyPosition(Integer yPosition) {
+		this.yPosition = yPosition;
+	}
+
+	public Long getmHeight() {
+		return mHeight;
+	}
+
+	public void setmHeight(Long mHeight) {
+		this.mHeight = mHeight;
+	}
+
+	public Long getmWidth() {
+		return mWidth;
+	}
+
+	public void setmWidth(Long mWidth) {
+		this.mWidth = mWidth;
+	}
+
+	public Integer getTransparent() {
+		return transparent;
+	}
+
+	public void setTransparent(Integer transparent) {
+		this.transparent = transparent;
+	}
+
+	public Long getVideoStyle() {
+		return videoStyle;
+	}
+
+	public void setVideoStyle(Long videoStyle) {
+		this.videoStyle = videoStyle;
+	}
+
+	public Integer getSkip() {
+		return skip;
+	}
+
+	public void setSkip(Integer skip) {
+		this.skip = skip;
+	}
+
+	public Long getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(Long scheduleId) {
+        this.scheduleId = scheduleId;
+    }
+
+    public String getMaterialName() {
+        return materialName;
+    }
+
+    public void setMaterialName(String materialName) {
+        this.materialName = materialName;
+    }
+
+    public String getMaterialId() {
+        return materialId;
+    }
+
+    public void setMaterialId(String materialId) {
+        this.materialId = materialId;
+    }
+
+    public String setToStr(Set<String> set){
+        String str="";
+        if(set != null){
+            for(String value : set){
+                str +=value+"&";
+            }
+            if(str.length() > 0){
+                str = str.substring(0, str.length()-1);
+            }
+        }
+        return str;
+    }
+
+    public String getBitrate() {
+        return bitrate;
+    }
+
+    public void setBitrate(String bitrate) {
+        this.bitrate = bitrate;
+    }
+
+    @Override
+    public String toString()
+    {
+        return JSON.toJSONString(this);
+    }
+
+	public String getParsestr() {
+		return parsestr;
+	}
+
+	public void setParsestr(String parsestr) {
+		this.parsestr = parsestr;
+	}
+
+	public String getPositionCreateTime() {
+		return positionCreateTime;
+	}
+
+	public void setPositionCreateTime(String positionCreateTime) {
+		this.positionCreateTime = positionCreateTime;
+	}
+
+	public String getSourceKey() {
+		return sourceKey;
+	}
+
+	public void setSourceKey(String sourceKey) {
+		this.sourceKey = sourceKey;
+	}
+
+	public String getPackageName() {
+		return packageName;
+	}
+
+	public void setPackageName(String packageName) {
+		this.packageName = packageName;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getShowUrl() {
+		return showUrl;
+	}
+
+	public void setShowUrl(String showUrl) {
+		this.showUrl = showUrl;
+	}
+
+	public String getClickUrl() {
+		return clickUrl;
+	}
+
+	public void setClickUrl(String clickUrl) {
+		this.clickUrl = clickUrl;
+	}
+	public String getReportParam() {
+		return reportParam;
+	}
+	public void setReportParam(String reportParam) {
+		this.reportParam = reportParam;
+	}
+	
+	
+	
+	
+    
+    
+}

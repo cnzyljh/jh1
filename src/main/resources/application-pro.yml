@@ -1,0 +1,6 @@
+spring:
+    datasource:
+        url: jdbc:mysql://10.10.1.196:3306/red_packet?allowMultiQueries=true&useUnicode=true&characterEncoding=UTF-8
+        username: root
+        password: test123
+

@@ -1,0 +1,222 @@
+2018-01-13 10:42:30.600  INFO 19556 --- [main] o.s.boot.SpringApplication               : 
+====================================================================================================================
+
+               欢迎使用        营销业务平台系统         v2.1 2017-10-27
+
+====================================================================================================================
+
+2018-01-13 10:42:30.770  INFO 19556 --- [main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5f9be66c: startup date [Sat Jan 13 10:42:30 CST 2018]; root of context hierarchy
+2018-01-13 10:42:31.608  INFO 19556 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-01-13 10:42:45.730  INFO 19556 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 
+2018-01-13 10:42:48.779  INFO 19556 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-01-13 10:42:48.790  INFO 19556 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+2018-01-13 10:42:48.887  INFO 19556 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-01-13 10:42:48.912 ERROR 19556 --- [container-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:48.930 ERROR 19556 --- [advTypeContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:48.962 ERROR 19556 --- [positionTypeContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:48.995 ERROR 19556 --- [dealUserContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.032 ERROR 19556 --- [dealMaterialContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.054 ERROR 19556 --- [dealTempletContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.070 ERROR 19556 --- [dealNetworkContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.079 ERROR 19556 --- [dealRegionContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.095 ERROR 19556 --- [dealSonRegionContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.107 ERROR 19556 --- [dealUserDataContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.116 ERROR 19556 --- [dealSysParameterContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.132 ERROR 19556 --- [dealProgramListContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.164 ERROR 19556 --- [dealProgramContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.195 ERROR 19556 --- [dealProgramColumnContainer-1] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:49.205  INFO 19556 --- [main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2018-01-13 10:42:53.924 ERROR 19556 --- [container-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:53.939 ERROR 19556 --- [advTypeContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:53.963 ERROR 19556 --- [positionTypeContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.008 ERROR 19556 --- [dealUserContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.034 ERROR 19556 --- [dealMaterialContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.114 ERROR 19556 --- [dealTempletContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.157 ERROR 19556 --- [dealSysParameterContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.157 ERROR 19556 --- [dealNetworkContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.157 ERROR 19556 --- [dealProgramListContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.158 ERROR 19556 --- [dealSonRegionContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.159 ERROR 19556 --- [dealRegionContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.160 ERROR 19556 --- [dealUserDataContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.166 ERROR 19556 --- [dealProgramContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:54.196 ERROR 19556 --- [dealProgramColumnContainer-2] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:58.925 ERROR 19556 --- [container-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:58.939 ERROR 19556 --- [advTypeContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:58.964 ERROR 19556 --- [positionTypeContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.009 ERROR 19556 --- [dealUserContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.037 ERROR 19556 --- [dealMaterialContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.143 ERROR 19556 --- [dealTempletContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.157 ERROR 19556 --- [dealProgramListContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.158 ERROR 19556 --- [dealNetworkContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.159 ERROR 19556 --- [dealSysParameterContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.160 ERROR 19556 --- [dealSonRegionContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.160 ERROR 19556 --- [dealRegionContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.162 ERROR 19556 --- [dealUserDataContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.167 ERROR 19556 --- [dealProgramContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:42:59.198 ERROR 19556 --- [dealProgramColumnContainer-3] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:03.926 ERROR 19556 --- [container-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:03.940 ERROR 19556 --- [advTypeContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:03.964 ERROR 19556 --- [positionTypeContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.011 ERROR 19556 --- [dealUserContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.039 ERROR 19556 --- [dealMaterialContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.144 ERROR 19556 --- [dealTempletContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.160 ERROR 19556 --- [dealProgramListContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.160 ERROR 19556 --- [dealNetworkContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.163 ERROR 19556 --- [dealSysParameterContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.164 ERROR 19556 --- [dealSonRegionContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.164 ERROR 19556 --- [dealRegionContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.164 ERROR 19556 --- [dealUserDataContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.168 ERROR 19556 --- [dealProgramContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:04.199 ERROR 19556 --- [dealProgramColumnContainer-4] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:08.926 ERROR 19556 --- [container-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:08.941 ERROR 19556 --- [advTypeContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:08.967 ERROR 19556 --- [positionTypeContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.013 ERROR 19556 --- [dealUserContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.040 ERROR 19556 --- [dealMaterialContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.150 ERROR 19556 --- [dealTempletContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.162 ERROR 19556 --- [dealNetworkContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.163 ERROR 19556 --- [dealProgramListContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.166 ERROR 19556 --- [dealSysParameterContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.167 ERROR 19556 --- [dealUserDataContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.167 ERROR 19556 --- [dealSonRegionContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.168 ERROR 19556 --- [dealRegionContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.173 ERROR 19556 --- [dealProgramContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:09.200 ERROR 19556 --- [dealProgramColumnContainer-5] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:13.928 ERROR 19556 --- [container-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:13.943 ERROR 19556 --- [advTypeContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:13.967 ERROR 19556 --- [positionTypeContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.014 ERROR 19556 --- [dealUserContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.044 ERROR 19556 --- [dealMaterialContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.150 ERROR 19556 --- [dealTempletContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.163 ERROR 19556 --- [dealProgramListContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.163 ERROR 19556 --- [dealNetworkContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.167 ERROR 19556 --- [dealUserDataContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.167 ERROR 19556 --- [dealSysParameterContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.169 ERROR 19556 --- [dealSonRegionContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.171 ERROR 19556 --- [dealRegionContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.177 ERROR 19556 --- [dealProgramContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:14.201 ERROR 19556 --- [dealProgramColumnContainer-6] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:18.928 ERROR 19556 --- [container-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:18.944 ERROR 19556 --- [advTypeContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:18.968 ERROR 19556 --- [positionTypeContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.014 ERROR 19556 --- [dealUserContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.045 ERROR 19556 --- [dealMaterialContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.151 ERROR 19556 --- [dealTempletContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.165 ERROR 19556 --- [dealProgramListContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.165 ERROR 19556 --- [dealNetworkContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.169 ERROR 19556 --- [dealSysParameterContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.169 ERROR 19556 --- [dealUserDataContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.171 ERROR 19556 --- [dealSonRegionContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.193 ERROR 19556 --- [dealRegionContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.193 ERROR 19556 --- [dealProgramContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:19.202 ERROR 19556 --- [dealProgramColumnContainer-7] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:23.929 ERROR 19556 --- [container-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:23.944 ERROR 19556 --- [advTypeContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:23.970 ERROR 19556 --- [positionTypeContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.016 ERROR 19556 --- [dealUserContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.046 ERROR 19556 --- [dealMaterialContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.154 ERROR 19556 --- [dealTempletContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.166 ERROR 19556 --- [dealProgramListContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.167 ERROR 19556 --- [dealNetworkContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.170 ERROR 19556 --- [dealSysParameterContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.171 ERROR 19556 --- [dealUserDataContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.173 ERROR 19556 --- [dealSonRegionContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.194 ERROR 19556 --- [dealRegionContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.194 ERROR 19556 --- [dealProgramContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:24.203 ERROR 19556 --- [dealProgramColumnContainer-8] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:28.930 ERROR 19556 --- [container-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:28.946 ERROR 19556 --- [advTypeContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:28.972 ERROR 19556 --- [positionTypeContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.017 ERROR 19556 --- [dealUserContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.047 ERROR 19556 --- [dealMaterialContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.154 ERROR 19556 --- [dealTempletContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.167 ERROR 19556 --- [dealNetworkContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.168 ERROR 19556 --- [dealProgramListContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.173 ERROR 19556 --- [dealUserDataContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.174 ERROR 19556 --- [dealSysParameterContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.175 ERROR 19556 --- [dealSonRegionContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.195 ERROR 19556 --- [dealProgramContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.195 ERROR 19556 --- [dealRegionContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:29.204 ERROR 19556 --- [dealProgramColumnContainer-9] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:33.932 ERROR 19556 --- [container-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:33.948 ERROR 19556 --- [advTypeContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:33.974 ERROR 19556 --- [positionTypeContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.018 ERROR 19556 --- [dealUserContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.048 ERROR 19556 --- [dealMaterialContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.156 ERROR 19556 --- [dealTempletContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.171 ERROR 19556 --- [dealNetworkContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.171 ERROR 19556 --- [dealProgramListContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.176 ERROR 19556 --- [dealUserDataContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.178 ERROR 19556 --- [dealSysParameterContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.181 ERROR 19556 --- [dealSonRegionContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.199 ERROR 19556 --- [dealRegionContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.200 ERROR 19556 --- [dealProgramContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:34.205 ERROR 19556 --- [dealProgramColumnContainer-10] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:38.936 ERROR 19556 --- [container-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:38.951 ERROR 19556 --- [advTypeContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:38.976 ERROR 19556 --- [positionTypeContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.021 ERROR 19556 --- [dealUserContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.051 ERROR 19556 --- [dealMaterialContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.158 ERROR 19556 --- [dealTempletContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.172 ERROR 19556 --- [dealNetworkContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.173 ERROR 19556 --- [dealProgramListContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.177 ERROR 19556 --- [dealUserDataContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.179 ERROR 19556 --- [dealSysParameterContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.183 ERROR 19556 --- [dealSonRegionContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.199 ERROR 19556 --- [dealRegionContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.202 ERROR 19556 --- [dealProgramContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:39.206 ERROR 19556 --- [dealProgramColumnContainer-11] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:43.939 ERROR 19556 --- [container-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:43.954 ERROR 19556 --- [advTypeContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:43.979 ERROR 19556 --- [positionTypeContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.024 ERROR 19556 --- [dealUserContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.054 ERROR 19556 --- [dealMaterialContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.159 ERROR 19556 --- [dealTempletContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.173 ERROR 19556 --- [dealNetworkContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.175 ERROR 19556 --- [dealProgramListContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.178 ERROR 19556 --- [dealUserDataContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.181 ERROR 19556 --- [dealSysParameterContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.185 ERROR 19556 --- [dealSonRegionContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.201 ERROR 19556 --- [dealRegionContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.203 ERROR 19556 --- [dealProgramContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:44.207 ERROR 19556 --- [dealProgramColumnContainer-12] o.s.d.r.l.RedisMessageListenerContainer  : Connection failure occurred. Restarting subscription task after 5000 ms
+2018-01-13 10:43:56.481  INFO 12372 --- [main] o.s.boot.SpringApplication               : 
+====================================================================================================================
+
+               欢迎使用        营销业务平台系统         v2.1 2017-10-27
+
+====================================================================================================================
+
+2018-01-13 10:43:56.636  INFO 12372 --- [main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5f9be66c: startup date [Sat Jan 13 10:43:56 CST 2018]; root of context hierarchy
+2018-01-13 10:43:57.383  INFO 12372 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-01-13 10:43:59.425  INFO 12372 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 
+2018-01-13 10:44:01.498  INFO 12372 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-01-13 10:44:01.509  INFO 12372 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+2018-01-13 10:44:01.582  INFO 12372 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-01-13 10:44:01.646  INFO 12372 --- [main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2018-01-13 10:48:07.540  INFO 17472 --- [main] o.s.boot.SpringApplication               : 
+====================================================================================================================
+
+               欢迎使用        营销业务平台系统         v2.1 2017-10-27
+
+====================================================================================================================
+
+2018-01-13 10:48:07.642  INFO 17472 --- [main] cn.rojao.Application                     : Starting Application on DESKTOP-LB1MI08 with PID 17472 (D:\Users\lijianhui\workspace2\nads\target\classes started by lijianhui in D:\Users\lijianhui\workspace2\nads)
+2018-01-13 10:48:07.643 DEBUG 17472 --- [main] cn.rojao.Application                     : Running with Spring Boot v1.5.2.RELEASE, Spring v4.3.7.RELEASE
+2018-01-13 10:48:07.643  INFO 17472 --- [main] cn.rojao.Application                     : The following profiles are active: dev
+2018-01-13 10:48:07.704  INFO 17472 --- [main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5f9be66c: startup date [Sat Jan 13 10:48:07 CST 2018]; root of context hierarchy
+2018-01-13 10:48:08.450  INFO 17472 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-01-13 10:48:10.163  INFO 17472 --- [main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService 
+2018-01-13 10:48:10.878  INFO 17472 --- [main] cn.rojao.netty.HttpNettyServer           : 获取到所有的RPC服务:{redisService=cn.rojao.redis.service.RedisService@388c519, scheduleService=cn.rojao.service.ScheduleService@421d54b3}
+2018-01-13 10:48:10.882  INFO 17472 --- [main] cn.rojao.netty.HttpNettyServer           : register service mapping:cn.rojao.redis.service.RedisService
+2018-01-13 10:48:10.883  INFO 17472 --- [main] cn.rojao.netty.HttpNettyServer           : register service mapping:cn.rojao.service.ScheduleService
+2018-01-13 10:48:10.883  INFO 17472 --- [main] cn.rojao.netty.HttpNettyServer           : begin to start rpc server
+2018-01-13 10:48:11.484  INFO 17472 --- [main] cn.rojao.netty.HttpNettyServer           : NettyRPC server listening on port 9091 and ready for connections...
+2018-01-13 10:48:12.697  INFO 17472 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-01-13 10:48:12.706  INFO 17472 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 0
+2018-01-13 10:48:12.780  INFO 17472 --- [main] o.s.c.support.DefaultLifecycleProcessor  : Starting beans in phase 2147483647
+2018-01-13 10:48:12.841  INFO 17472 --- [main] s.a.ScheduledAnnotationBeanPostProcessor : No TaskScheduler/ScheduledExecutorService bean found for scheduled processing
+2018-01-13 10:48:12.857  INFO 17472 --- [main] cn.rojao.Application                     : Started Application in 5.763 seconds (JVM running for 6.364)
+2018-01-13 10:48:12.949  INFO 17472 --- [pool-1-thread-1] cn.rojao.config.RedisAuthorize           : 没有授权的服务器地址：192.168.32.1
+2018-01-13 10:48:12.949  INFO 17472 --- [pool-1-thread-1] cn.rojao.config.RedisAuthorize           : 启动失败，请联系如加网络技术工程师
+2018-01-13 10:48:12.949  INFO 17472 --- [pool-1-thread-1] cn.rojao.config.ScheduleCheck            : 分发一分钟请求数为：0

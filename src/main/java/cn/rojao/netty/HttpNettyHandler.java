@@ -1,0 +1,357 @@
+package cn.rojao.netty;
+
+import static io.netty.handler.codec.http.HttpHeaderNames.ACCESS_CONTROL_ALLOW_CREDENTIALS;
+import static io.netty.handler.codec.http.HttpHeaderNames.ACCESS_CONTROL_ALLOW_HEADERS;
+import static io.netty.handler.codec.http.HttpHeaderNames.ACCESS_CONTROL_ALLOW_METHODS;
+import static io.netty.handler.codec.http.HttpHeaderNames.ACCESS_CONTROL_ALLOW_ORIGIN;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_LENGTH;
+import static io.netty.handler.codec.http.HttpHeaderNames.CONTENT_TYPE;
+import static io.netty.handler.codec.http.HttpResponseStatus.OK;
+import static io.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
+import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSON;
+
+import cn.rojao.config.ScheduleCheck;
+import cn.rojao.entity.AdWebBody;
+import cn.rojao.entity.AdWebEntity;
+import cn.rojao.entity.AdWebHead;
+import cn.rojao.entity.AdWebREQT;
+import cn.rojao.entity.AdWebRESP;
+import cn.rojao.entity.AdvREQT;
+import cn.rojao.entity.AdvRESP;
+import cn.rojao.entity.InfoItem;
+import cn.rojao.entity.InfoREQT;
+import cn.rojao.entity.InfoRESP;
+import cn.rojao.entity.InterCutEntity;
+import cn.rojao.entity.InterCutResp;
+import cn.rojao.entity.Item;
+import cn.rojao.entity.ScreenInfo;
+import cn.rojao.entity.ZyWebRESP;
+import cn.rojao.entity.SourceData;
+import cn.rojao.entity.UeResponse;
+import cn.rojao.service.ScheduleService;
+import cn.rojao.util.EncryptUtil;
+import cn.rojao.util.MessageUtil;
+import cn.rojao.util.StringUtils;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
+import net.sf.json.JSONObject;
+
+public class HttpNettyHandler  extends ChannelInboundHandlerAdapter{
+	 
+	   static Logger logger = LoggerFactory.getLogger(HttpNettyHandler.class);
+	
+	   Map<String, Object> exportServiceMap;
+	   
+	   public  HttpNettyHandler(Map<String, Object> exportServiceMap){
+		   this.exportServiceMap = exportServiceMap;
+	   }	   	   
+	   
+	   
+	   @Override
+	   public void channelRead(ChannelHandlerContext ctx, Object msg) throws ParseException {
+		    FullHttpRequest requet = (FullHttpRequest) msg;   
+	        ByteBuf buf = requet.content();
+	        String body = buf.toString(io.netty.util.CharsetUtil.UTF_8);
+	        buf.release();
+	        String uri = requet.uri();
+	        logger.debug("uri:"+uri);
+	        logger.debug("requestParameter:"+body);
+	        AdvREQT advReqt = new AdvREQT();
+	        if(!uri.endsWith("GetInfo")){
+	            try {
+	                advReqt = JSON.parseObject(body, AdvREQT.class);
+	            } catch (Exception e) {
+	                AdvRESP advRespose = new  AdvRESP();
+	                advRespose.setSessionId("");
+	                advRespose.setResultCode("100004");
+	                advRespose.setResultDesc("Json parse error!");
+	                advRespose.setResultCount(0L);
+	                String resp =  advRespose.build();
+	                sendMessage(ctx,resp,null,null);
+	                return;
+	            }
+	        }
+	        ScheduleService scheduleService = (ScheduleService)exportServiceMap.get("cn.rojao.service.ScheduleService");
+	        String response = "";
+	        String aseKey = scheduleService.getAseKey();
+	        String offset = "";
+	        if(uri.endsWith("GetAdv")){	  
+	            AdvRESP resp = advReqt.check();
+	            if("000000".equals(resp.getResultCode())){
+	                response = scheduleService.dealAdv(advReqt).build();
+	            }else{
+	                response = resp.build();
+	            }
+	        }
+	        else if(uri.endsWith("GetAdvApp")){
+                AdvRESP resp = advReqt.check();
+                if("000000".equals(resp.getResultCode())){
+                    response = scheduleService.dealAdv(advReqt).build();
+                }else{
+                    response = resp.build();
+                }
+	        }
+            else if(uri.contains("getData")) {
+            	advReqt = new AdvREQT();
+            	String tempCode = null;
+            	String account = null;
+            	String regexString  = "^/getData\\?{1}([A-Za-z0-9-~]+\\={1})([A-Za-z0-9-~]*)\\&{1}([A-Za-z0-9-~]+\\={1})([A-Za-z0-9-~]*)\\&{1}([A-Za-z0-9-~]+\\={1})([A-Za-z0-9-~]*)$";
+            	String regexString1 = "^[0-9a-zA-Z]{1,20}$";
+        		Pattern pattern = Pattern.compile(regexString);
+        		Matcher matcher = pattern.matcher(uri);
+        		ZyWebRESP zywebresp = new ZyWebRESP(); 
+        		if(matcher.matches()){
+                	String param[] = uri.split("\\?")[1].split("&");
+                	for(String paramString : param){
+                		if("tempCode".equals(paramString.split("=")[0])){
+                			try {
+                				tempCode = paramString.split("=")[1];
+							} catch (Exception e) {
+								tempCode="";
+							}
+                			
+                		}
+                		if("account".equals(paramString.split("=")[0])){
+                			try {
+                				account = paramString.split("=")[1];
+							} catch (Exception e) {
+								account="";
+							}
+                			
+                		}
+                		if("offset".equals(paramString.split("=")[0])){
+                			try {
+                				offset = paramString.split("=")[1];
+							} catch (Exception e) {
+								offset="";
+							}
+                			
+                		}
+                	}
+                	if(StringUtils.isEmpty(tempCode)){
+                		zywebresp.setErrorString("TempCode is not empty!");
+                	}else{
+                		pattern = Pattern.compile(regexString1);
+                		matcher = pattern.matcher(tempCode);
+                		if(!matcher.matches()){
+                			zywebresp.setErrorString("The format of  tempCode is not standard!");
+                		}
+                	}
+                	if(StringUtils.isEmpty(account)){
+                		zywebresp.setErrorString("Account is not empty!");
+                	}else{
+                		pattern = Pattern.compile(regexString1);
+                		matcher = pattern.matcher(account);
+                		if(!matcher.matches()){
+                			zywebresp.setErrorString("The format of  account is not standard!");
+                		}
+                	}
+                	if(StringUtils.isEmpty(offset)){
+                		zywebresp.setErrorString("offset is not empty!");
+                	}else{
+                		pattern = Pattern.compile(regexString1);
+                		matcher = pattern.matcher(offset);
+                		if(!matcher.matches()){
+                			zywebresp.setErrorString("The format of  offset is not standard!");
+                		}
+                	}
+                	if(StringUtils.isEmpty(zywebresp.getErrorString())){
+                    	//advReqt.setAdvType(tempCode);
+                    	//advReqt.setAdvType("002");
+                    	//advReqt.setAdvSubType("001");
+                    	advReqt.setClientId(account);
+                    	advReqt.setReqNum(-1L);
+                    	zywebresp = scheduleService.getZyWebResp(advReqt, tempCode);
+                	}              
+        		}else{
+        			zywebresp.setErrorString("Parameters parse error!");
+        		}
+            	 
+            	response = zywebresp.toString();
+
+                        	
+            }
+            else if(uri.endsWith("GetInfo")){
+            	InfoREQT infoREQT = new InfoREQT();
+	            try {
+	            	infoREQT = JSON.parseObject(body,InfoREQT.class);
+	            } catch (Exception e) {
+	            	InfoRESP infoResp = new InfoRESP("000003","");
+	                String resp = infoResp.build();
+	                sendMessage(ctx,resp,null,null);
+	                scheduleService.toReport(new AdvREQT(), infoResp.getResultCode(), infoResp.getResultDesc());
+	                return;
+	            }            	
+                InfoRESP resp = infoREQT.check(aseKey);   
+                offset = infoREQT.getOffset();
+                if("000000".equals(resp.getResultCode())){
+                    List<Item> items = new ArrayList<Item>();
+                    String infoIdStr = infoREQT.getInfoId();
+                    String[] infoIds = infoIdStr.split(",");
+                    //获取各个信息位编码的素材集合
+                    List<String> resultCodes = new ArrayList<>();
+                    for(String infoId : infoIds){
+                        AdvREQT request = new AdvREQT(infoREQT, infoId);
+                        AdvRESP advResponse = scheduleService.dealAdv(request);
+                        if(advResponse.getAdvItem()!= null && advResponse.getAdvItem().size() > 0){
+                            List<Item> its = advResponse.getAdvItem();
+                            for(Item it : its){
+                                it.setAdvId(infoId);
+                            }
+                            items.addAll(advResponse.getAdvItem());
+                        }else{
+                        	resultCodes.add(advResponse.getResultCode());
+                        }
+                    }  
+                    if(items.size() > 0){
+                        List<InfoItem> infoItems = new ArrayList<InfoItem>();
+                        for(Item item : items){
+                            InfoItem infoItem = new InfoItem(item);
+                            infoItems.add(infoItem);
+                        }                        
+                        response = new InfoRESP(infoItems,0l,infoREQT.getSessionId()).build();
+                    }else{
+                    	String resultCode = "100000";
+                    	if(resultCodes.size() > 0){
+                    		resultCode = resultCodes.get(0);
+                    	}
+                    	InfoRESP infoRESP = new InfoRESP(resultCode,infoREQT.getSessionId());
+                    	
+                        response = infoRESP.build();
+                    }
+                }else{
+                    response = resp.build();
+                    AdvREQT request = new AdvREQT(infoREQT, infoREQT.getInfoId());
+                    scheduleService.toReport(request, resp.getResultCode(), resp.getResultDesc());
+                }
+                
+            }
+            else if(uri.contains("getMesage")){
+            	try {
+					Map<String, String> map = MessageUtil.property();
+					
+					if(map != null){
+						JSONObject jsObj = JSONObject.fromObject(map);
+						response = jsObj.toString();
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					response = "";
+				}
+            	
+            }
+            else if(uri.contains("GetScreenInfo")){
+            	InfoREQT infoREQT = new InfoREQT();
+            	ScreenInfo screenInfo = new ScreenInfo();
+	            try {
+	            	infoREQT = JSON.parseObject(body,InfoREQT.class);
+	            	if(StringUtils.isNotEmpty(infoREQT.getOffset())){
+	            		offset = infoREQT.getOffset();
+	            		screenInfo = scheduleService.dealScreen(infoREQT);
+	            		response = screenInfo.build();	            		
+	            	}
+	            } catch (Exception e) {
+	            	screenInfo = new ScreenInfo();
+	            	screenInfo.setPageUrl("");
+	            	screenInfo.setScreenTime("180");
+	            	screenInfo.setSessionId("");
+	                String resp = screenInfo.build();
+	                sendMessage(ctx,resp,null,null);
+	                return;
+	            }            	
+            }
+	        //返回处理后消息
+	        sendMessage(ctx,response,aseKey,offset);
+		  
+	   }
+	   
+	 
+	   
+	   private void sendMessage(ChannelHandlerContext ctx,String msg,String aseKey,String offset) {
+		    try{
+		    	if(StringUtils.isNotEmpty(aseKey) && StringUtils.isNotEmpty(offset)){
+		    		Pattern pattern = Pattern.compile("^[A-Fa-f0-9]{16}$");
+		    		Matcher offsetMatcher = pattern.matcher(offset);
+		    		Matcher aseKeyMatcher = pattern.matcher(aseKey);
+		    		if(offsetMatcher.matches() && aseKeyMatcher.matches()){
+		    			msg = EncryptUtil.encrypt(msg, aseKey, offset);
+		    		}
+		    	}
+		    	FullHttpResponse response;
+		    	ByteBuf heapBuffer = Unpooled.buffer().writeBytes(msg.getBytes("UTF-8"));
+	            response = new DefaultFullHttpResponse(HTTP_1_1, OK,
+	            		heapBuffer);
+	            response.headers().set(CONTENT_TYPE, "application/json");
+	            response.headers().set(ACCESS_CONTROL_ALLOW_CREDENTIALS,"true");
+	            response.headers().set(ACCESS_CONTROL_ALLOW_HEADERS,"Origin,Content-Type,*");
+	            response.headers().set(ACCESS_CONTROL_ALLOW_METHODS,"POST,OPTIONS");
+	            response.headers().set(ACCESS_CONTROL_ALLOW_ORIGIN,"*");
+	            response.headers().set(CONTENT_LENGTH,
+	                    response.content().readableBytes());
+	            
+	            ctx.writeAndFlush(response);
+	            logger.debug("respon:"+msg);
+	            heapBuffer.clear();
+	            response.content().clear();
+	            ctx.channel().close();
+	            ctx.close();
+	       }catch(Exception e){
+	           e.printStackTrace();
+	       }		
+		} 
+	   
+	 
+	   @Override
+		public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause)
+				throws Exception {
+			logger.error("系统异常信息!",cause);
+			closeOnFlush(ctx.channel());
+			ctx.channel().close();
+			ctx.close();
+		}
+	   
+	   @Override
+	   public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+		   closeOnFlush(ctx.channel());
+		   ctx.channel().close();
+		   ctx.close();
+	    }
+	   
+	   @Override
+	   public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		   //记录每一分钟请求数
+		   ScheduleCheck.reqCount.incrementAndGet();
+	   }
+
+
+		
+		/**
+		 * close the specified channel after all queue write request are flushed
+		 */
+		static void closeOnFlush(Channel ch){
+			if(ch.isActive())
+				ch.writeAndFlush(Unpooled.EMPTY_BUFFER).addListener(ChannelFutureListener.CLOSE);
+		}
+
+}

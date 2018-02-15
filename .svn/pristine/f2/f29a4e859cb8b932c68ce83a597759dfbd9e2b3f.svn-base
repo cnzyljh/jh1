@@ -1,0 +1,335 @@
+package cn.rojao.entity;
+
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+
+import cn.rojao.redis.pojo.MaterialRedis;
+import cn.rojao.redis.pojo.ScheduleRedis;
+
+public class InfoItem {
+    /**信息位编码**/
+    private String infoId;
+    /**用于上报的key**/
+    private String infoContentKey;
+    /**广告平台侧的视频广告内容ID，没有为空。**/
+    private String contentId;
+    /**素材类型，图片（1）、和文本（2），视频（3）、网页（4）、zip包（6）**/
+    private Long assetType;
+    /**广告素材所在路径（如果是IPQAM播放的VOD点播系统，视频素材该字段为空），文字时该值为空**/
+    private String infoURL;
+    /**素材超链接，点击广告图片的详情时使用。没有为空**/
+    private String href;
+    /**素材MD5验证码，如果值为0，不校验。对文件内容校验**/
+    private String mD5;
+    /**文字滚动内容。多条以&n隔开**/
+    private String context;
+    /**非视频广告的显示持续时间，单位秒。如果是视频广告，则是视频广告实际时长。**/
+    private Long duration;
+    /**显示次数，默认显示一次，显示多次时，间隔时间由interval参数控制**/
+    private Long displayTimes;
+    /**显示多次情况下的两次显示之间的间隔，单位秒，默认间隔为0。**/
+    private Long interval;
+    /**广告显示开始时间可以选择相对时间（比如观看了视频10分钟时）或绝对时间（观看到视频的第10分钟），缺省为相对时间相对时间方式（0），绝对时间方式（1)**/
+    private Long offsetType;
+    /**广告显示起始时间便偏移，0片头，-1片尾，其他相对时间偏移的秒数，只对视频广告或泡泡有效。**/
+    private Long offset;
+
+    private Integer xPosition;
+
+    private Integer yPosition;
+    
+    private Long mHeight;
+    
+    private Long mWidth;
+    
+    /**动画效果**/
+    private Integer  animation;
+    
+    /**跑马灯速度，每秒多少像素**/
+    private Long speed;
+    
+    /**方向1 右到左2 左到右3 上到下  4 下到上**/
+    private Long direct;
+    
+    /**字幕背景颜色**/
+    private String backgroudColor;
+    
+    /**透明度（0-255）**/
+    private Integer transparent;
+    
+    /**视频广告显示方式：Fill（0）或者Replace（0），视频没有该字段表示为0**/
+    private Long videoStyle;
+    
+    /**透明度视频广告是否可跳过，不可跳过（0），可跳过（1），缺省为不可跳过**/
+    private Integer skip;
+
+    /**信息显示上报的url，以get方式调用该接口。如广告无须上报，该字段为空或没有该字段**/
+    private String showUrl;
+    
+    /**终端点击超链接信息显示上报的url，以get方式调用该接口。如果没有超链接，该字段为空或没有该字段**/
+    private String clickUrl;
+    
+    public InfoItem(){
+        
+    }
+    
+	public InfoItem(Item item){
+        this.infoId = item.getAdvId();
+        this.infoContentKey = "";
+        this.contentId = item.getContentId();
+        this.assetType = item.getAssetType();
+        this.infoURL = item.getAdvURL();
+        this.href = item.getHref();
+        this.mD5 = item.getmD5();
+        this.context = item.getContext();
+        this.duration = item.getDuration();
+        this.displayTimes = item.getDisplayTimes();
+        this.interval = item.getInterval();
+        this.offsetType = item.getOffsetType();
+        this.offset = item.getOffset();
+        this.xPosition = item.getXPosition();
+        this.yPosition = item.getYPosition();
+        this.mHeight = item.getmHeight();
+        this.mWidth = item.getmWidth();
+        this.animation = item.getAnimation();
+        this.speed = item.getSpeed();
+        this.direct = item.getDirect();
+        this.backgroudColor = item.getBackgroudColor();
+        this.transparent = item.getTransparent();
+        if(item.getVideoStyle() == null && 
+        		(item.getAssetType().longValue() == 3 || item.getAssetType().longValue() == 7)){
+        	this.videoStyle = 0l;
+        }else{
+        	this.videoStyle = item.getVideoStyle();
+        }
+        this.skip = item.getSkip(); 
+        this.showUrl = item.getShowUrl();
+        this.clickUrl = item.getClickUrl();
+    }
+    
+    
+    public String getInfoId() {
+        return infoId;
+    }
+
+    public void setInfoId(String infoId) {
+        this.infoId = infoId;
+    }
+
+    public String getInfoContentKey() {
+        return infoContentKey;
+    }
+
+    public void setInfoContentKey(String infoContentKey) {
+        this.infoContentKey = infoContentKey;
+    }
+
+    public String getContentId() {
+        return contentId;
+    }
+
+    public void setContentId(String contentId) {
+        this.contentId = contentId;
+    }
+
+    public Long getAssetType() {
+        return assetType;
+    }
+
+    public void setAssetType(Long assetType) {
+        this.assetType = assetType;
+    }
+
+    public String getInfoURL() {
+        return infoURL;
+    }
+
+    public void setInfoURL(String infoURL) {
+        this.infoURL = infoURL;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+
+    public String getmD5() {
+        return mD5;
+    }
+
+    public void setmD5(String mD5) {
+        this.mD5 = mD5;
+    }
+
+    public String getContext() {
+        return context;
+    }
+
+    public void setContext(String context) {
+        this.context = context;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
+    }
+
+    public Long getDisplayTimes() {
+        return displayTimes;
+    }
+
+    public void setDisplayTimes(Long displayTimes) {
+        this.displayTimes = displayTimes;
+    }
+
+    public Long getInterval() {
+        return interval;
+    }
+
+    public void setInterval(Long interval) {
+        this.interval = interval;
+    }
+
+    public Long getOffsetType() {
+        return offsetType;
+    }
+
+    public void setOffsetType(Long offsetType) {
+        this.offsetType = offsetType;
+    }
+
+    public Long getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Long offset) {
+        this.offset = offset;
+    }
+
+    public Integer getxPosition() {
+        return xPosition;
+    }
+
+    public void setxPosition(Integer xPosition) {
+        this.xPosition = xPosition;
+    }
+
+    public Integer getyPosition() {
+        return yPosition;
+    }
+
+    public void setyPosition(Integer yPosition) {
+        this.yPosition = yPosition;
+    }
+
+    public Long getmHeight() {
+        return mHeight;
+    }
+
+    public void setmHeight(Long mHeight) {
+        this.mHeight = mHeight;
+    }
+
+    public Long getmWidth() {
+        return mWidth;
+    }
+
+    public void setmWidth(Long mWidth) {
+        this.mWidth = mWidth;
+    }
+
+    public Integer getAnimation() {
+        return animation;
+    }
+
+    public void setAnimation(Integer animation) {
+        this.animation = animation;
+    }
+
+    public Long getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Long speed) {
+        this.speed = speed;
+    }
+
+    public Long getDirect() {
+        return direct;
+    }
+
+    public void setDirect(Long direct) {
+        this.direct = direct;
+    }
+
+    public String getBackgroudColor() {
+        return backgroudColor;
+    }
+
+    public void setBackgroudColor(String backgroudColor) {
+        this.backgroudColor = backgroudColor;
+    }
+
+    public Integer getTransparent() {
+        return transparent;
+    }
+
+    public void setTransparent(Integer transparent) {
+        this.transparent = transparent;
+    }
+
+    public Long getVideoStyle() {
+        return videoStyle;
+    }
+
+    public void setVideoStyle(Long videoStyle) {
+        this.videoStyle = videoStyle;
+    }
+
+    public Integer getSkip() {
+        return skip;
+    }
+
+    public void setSkip(Integer skip) {
+        this.skip = skip;
+    }
+
+    public String getShowUrl() {
+		return showUrl;
+	}
+
+	public void setShowUrl(String showUrl) {
+		this.showUrl = showUrl;
+	}
+
+	public String getClickUrl() {
+		return clickUrl;
+	}
+
+	public void setClickUrl(String clickUrl) {
+		this.clickUrl = clickUrl;
+	}
+
+
+    public String setToStr(Set<String> set){
+        String str="";
+        if(set != null){
+            for(String value : set){
+                str +=value+"&";
+            }
+            if(str.length() > 0){
+                str = str.substring(0, str.length()-1);
+            }
+        }
+        return str;
+    }
+   
+}

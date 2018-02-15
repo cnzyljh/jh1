@@ -1,0 +1,40 @@
+application:
+     version: v2.1 2017-10-27
+   # http 服务接口配置  
+httpServer: 
+     port: 9091
+     ioThreadNum: 5
+     backlog: 1024
+     
+spring:
+    # 环境 dev|test|pro
+    profiles:
+        active: dev
+    main: 
+        banner-mode: log
+    datasource:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.jdbc.Driver
+        # jackson时间格式化
+    jackson:
+        time-zone: GMT+8
+        date-format: yyyy-MM-dd HH:mm:ss
+    thymeleaf:
+        cache: false
+    redis:
+       password:
+       #clusters: 10.10.1.239:2001,10.10.1.239:2002,10.10.1.239:2003,10.10.1.239:2004,10.10.1.239:2005,10.10.1.239:2006
+       #clusters: 10.10.1.239:2006,10.10.1.239:2001,10.10.1.239:2002,10.10.1.239:2003,10.10.1.239:2004,10.10.1.239:2005
+       #clusters: 10.10.2.241:7000,10.10.2.241:7001,10.10.2.241:7002,10.10.2.241:7003,10.10.2.241:7004,10.10.2.241:7005
+       #clusters: 192.168.32.128:7000,192.168.32.128:7001,192.168.32.128:7002,192.168.32.128:7003,192.168.32.128:7004,192.168.32.128:7005
+       #clusters: 192.168.175.128:7000,192.168.175.128:7001,192.168.175.128:7002,192.168.175.128:7003,192.168.175.128:7004,192.168.175.128:7005
+       #clusters: 10.10.2.115:7000,10.10.2.115:7001,10.10.2.115:7002,10.10.2.115:7003,10.10.2.115:7004,10.10.2.115:7005    
+       clusters: 192.168.32.131:7000,192.168.32.131:7001,192.168.32.131:7002,192.168.32.131:7003,192.168.32.131:7004,192.168.32.131:7005
+logging:
+    file: ./log/nads.log
+    config: ./logback-spring.xml
+upload: 
+    NGINX_PATH: http://10.10.2.81:9000/
+    VEDIO_PATH: http://itv.100.ahct.lv1.vcache.cn/
+    PIC_PATH: http://pic.100.ahct.lv1.vcache.cn/
+    

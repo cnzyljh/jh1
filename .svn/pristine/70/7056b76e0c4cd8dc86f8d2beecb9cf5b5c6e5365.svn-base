@@ -1,0 +1,853 @@
+package cn.rojao.service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import cn.rojao.annotation.CheckTime;
+import cn.rojao.entity.AdsFlag;
+import cn.rojao.entity.AdvREQT;
+import cn.rojao.entity.Item;
+import cn.rojao.entity.LevelEntity;
+import cn.rojao.entity.ProgramlistRedis;
+import cn.rojao.entity.ReportEntity;
+import cn.rojao.redis.RedisUtil;
+import cn.rojao.redis.pojo.MaterialRedis;
+import cn.rojao.redis.pojo.ProgramRedis;
+import cn.rojao.redis.pojo.ScheduleRedis;
+import cn.rojao.redis.pojo.UserRedis;
+import cn.rojao.util.SSLClient;
+import cn.rojao.util.StringUtils;
+
+@Component("scheduleUtil")
+public class ScheduleUtil {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ScheduleUtil.class);
+	
+	@Autowired
+	RedisUtil redisUtil;
+	
+	/*@Value("${upload.NGINX_PATH}")
+    public String NGINX_PATH;
+	
+	@Value("${upload.VEDIO_PATH}")
+    public String VEDIO_PATH;
+	
+	@Value("${upload.PIC_PATH}")
+    public String PIC_PATH;*/
+	
+	  /**
+     * 判断请求的用户是否在黑名单中
+     * @param scheduleRedis 投放
+     * @param advReqt       请求参数
+     * @return
+     */
+	//@CheckTime()
+    public List<ScheduleRedis> judgeBlacklist(List<ScheduleRedis> scheduleList , AdvREQT advReqt){
+        UserRedis userRedis = redisUtil.findUser(advReqt.getClientId());
+        for(int i = scheduleList.size()-1;i>=0;i--){
+            //判断用户是否在黑名单中
+            ScheduleRedis schedule = scheduleList.get(i);
+            if(userRedis != null && userRedis.getBlackList() != null){
+                if("".equals(userRedis.getBlackList())){
+                    scheduleList.remove(i);
+                    logger.debug("the clientId [" + advReqt.getClientId() + "] is in the black list");
+                    continue;
+                }else{
+                    String[] positions = userRedis.getBlackList().split(",");
+                    List<String> positionList = Arrays.asList(positions);
+                    if(!positionList.contains(schedule.getAdvId())){
+                        scheduleList.remove(i);
+                        logger.debug("the clientId [" + advReqt.getClientId() + "] is in the black list");
+                        continue;
+                    }
+                }
+            }
+        }        
+        return scheduleList;
+        
+      /*  List<ScheduleRedis> scheduleRedisList = new ArrayList<ScheduleRedis>();
+        UserRedis userRedis = redisUtil.findUser(advReqt.getClientId());
+        if(userRedis != null && userRedis.getBlackList() != null){
+        	logger.debug("the clientId [" + advReqt.getClientId() + "] is in the black list");
+        	if(userRedis.getBlackList().equals("")){
+        		return scheduleRedisList;
+        	}else{
+        		 String[] positions = userRedis.getBlackList().split(",");
+                 List<String> positionList = Arrays.asList(positions);
+                 for(ScheduleRedis schedule : scheduleList){
+                 	if(positionList.contains(schedule.getAdvId())){
+                 		scheduleRedisList.add(schedule);
+                 	}
+                 }
+        	}
+        }else{
+        	scheduleRedisList.addAll(scheduleList);
+        }
+        return scheduleRedisList;*/
+    }
+	
+	
+
+	/**
+	 * 获取排序后的投放list
+	 * @param scheduleList
+	 * @return
+	 */
+	//@CheckTime()
+	@SuppressWarnings("unchecked")
+	public List<ScheduleRedis> transformObject(List<ScheduleRedis> scheduleList, AdvREQT advReqt){
+		List<ScheduleRedis> scheduleRedisList = new ArrayList<ScheduleRedis>();
+		if(scheduleList != null){
+			for(ScheduleRedis redis : scheduleList){
+				if(judgeByCode(redis, advReqt)){//判断请求参数是否符合条件个数
+					scheduleRedisList.add(redis);
+				}
+			}
+		}
+		Collections.sort(scheduleRedisList);
+		return scheduleRedisList;
+	}
+	
+	/**
+	 * 根据编码值，判断用户请求参数是否满足投放条件
+	 * @param scheduleRedis 投放
+	 * @param advReqt       请求参数
+	 * @return
+	 */
+	public boolean judgeByCode(ScheduleRedis scheduleRedis , AdvREQT advReqt){
+		long code =  scheduleRedis.getScheduleCoding()&advReqt.getAdvReqtCoding();
+		if(code == scheduleRedis.getScheduleCoding().longValue()){
+			return true;
+		}
+		return false;
+	}
+	
+	
+	/**
+	 * 判断请求参数内容是否符合投放
+	 * @param list
+	 * @param advReqt
+	 * @return
+	 */
+	//@CheckTime()
+	public List<ScheduleRedis> judgeBySchedule(List<ScheduleRedis> list, AdvREQT advReqt ){
+		List<ScheduleRedis> scheduleList = new ArrayList<ScheduleRedis>();
+		  
+		UserRedis userRedis = redisUtil.findUser(advReqt.getClientId());
+		if(userRedis != null && StringUtils.isEmpty(advReqt.getRegionCode())){
+			advReqt.setRegionCode(userRedis.getAreaId());
+		}
+		String regionCode = getReqRegion(userRedis , advReqt);
+		ProgramlistRedis programlist = null;
+		ProgramRedis program = null;
+		Set<String> columnSet = new HashSet<>();
+		if(StringUtils.isNotEmpty(advReqt.getContentId())){
+			//获取epg节目redis
+			programlist = redisUtil.getProList(advReqt.getContentId());
+			//获取内容redis
+			program = redisUtil.getProgram(advReqt.getContentId());	
+			//获取内容关联的栏目
+			columnSet = redisUtil.getProgramColumn(advReqt.getContentId());
+		}
+		
+		for(ScheduleRedis schedule : list ){
+		    int level = 0;
+            int sortValue = schedule.getPriority()*100;
+			//判断当前时间是在投放时间内
+			if(checkTime(schedule)){
+				logger.debug("get Adv: but no times ");
+				continue;
+			}
+			AdsFlag adsFlag = new AdsFlag();
+			Map<String, Set<String>> matchSet = new HashMap<String, Set<String>>();
+			
+			List<String> scheduleRegions = getScheduleRegion(schedule);
+			
+			//判断区域是否符合
+			if(scheduleRegions != null && scheduleRegions.size()>0){
+				if(!scheduleRegions.contains(regionCode)){
+					logger.debug("get Adv: but region type[" + regionCode + "] not fit");
+                    continue;
+				}
+				sortValue += 1;
+				if(level < LevelEntity.REGION){
+                    level = LevelEntity.REGION;
+                }
+			}
+			//判断是否有视频标高清
+			List<String> formats = schedule.getFormats();
+			if(formats!=null && formats.size()>0 && StringUtils.isNotEmpty(advReqt.getFormat())){
+			    if(!formats.contains(advReqt.getFormat()) && !formats.contains("10")){//当有非视频素材时会存入10
+			        logger.debug("get Adv: but format type[" + advReqt.getFormat() + "] not fit");
+                    continue;
+			    }
+			}
+			//比较频道是否符合
+			List<String> channelList = schedule.getChannels();
+			if (channelList != null && channelList.size()>0){
+	            if(advReqt.getChannelId() == null && programlist != null){
+	                advReqt.setChannelId(programlist.getChannelId());
+	            }
+			    if(!channelList.contains(advReqt.getChannelId())){
+				    if(!"-1".equals(advReqt.getChannelId())){
+				        logger.debug("get Adv: but channel type[" + advReqt.getChannelId() + "] not fit");
+				        continue;
+				    }
+				}
+				adsFlag.setHasChannel(true);
+				
+			    Set<String> set = new HashSet<>();
+			    for(String channel : channelList){
+			        set.add(channel);
+			    }
+			    matchSet.put("channel", set);
+                
+				sortValue += 1;
+                if(level < LevelEntity.CHANNEL){
+                    level = LevelEntity.CHANNEL;
+                }
+			}
+			//比较内容是否符合
+			List<String> assetList = schedule.getContents();
+			if(assetList != null && assetList.size()>0){
+				if(!assetList.contains(advReqt.getContentId())){
+					logger.debug("get Adv: but content type[" + advReqt.getContentId() + "] not fit");
+                    continue;
+				}
+				adsFlag.setHasContent(true);
+				sortValue += 1;
+                if(level < LevelEntity.CONTENT_ID){
+                    level = LevelEntity.CONTENT_ID;
+                }
+			}
+			
+			//比较父集内容是否符合
+			List<String> folderContentList = schedule.getFolderContents();
+			if(folderContentList != null && folderContentList.size() > 0){
+			    if(!folderContentList.contains(advReqt.getFolderContentId())){
+                    logger.debug("get Adv: but folderContent type[" + advReqt.getFolderContentId() + "] not fit");
+                    continue;
+                }
+                adsFlag.setHasFolderContent(true);
+                sortValue += 1;
+                if(level < LevelEntity.FOLDER_CONTENT_ID){
+                    level = LevelEntity.FOLDER_CONTENT_ID;
+                }
+			}
+			
+			//比较内容分类是否符合
+			List<String> genreList = schedule.getGenres();
+			if(genreList != null && genreList.size()>0){
+				ProgramRedis programReids = redisUtil.getProgram(advReqt.getContentId());
+				if(programReids !=null && StringUtils.isNotEmpty(programReids.getGenre())){
+					String[] genres = programReids.getGenre().split(",");
+					List<String> genresList = Arrays.asList(genres);
+					Set<String> isMixed = isMixed(genreList,genresList);
+					if(isMixed == null || isMixed.size() == 0){
+						logger.debug("get Adv: but genre type[" + advReqt.getChannelId() + "] not fit");
+	                    continue;
+					}
+				}else{
+					logger.debug("get Adv: but genre type[" + advReqt.getChannelId() + "] not fit");
+                    continue;
+				}
+				sortValue += 1;
+                if(level < LevelEntity.PROGRAM_TYPE){
+                    level = LevelEntity.PROGRAM_TYPE;
+                }
+
+			}
+			
+			//比较提供商是否符合
+			List<String> provideList = schedule.getProvides();
+			if(provideList != null && provideList.size()>0){
+				if(!provideList.contains(advReqt.getProviderId())){
+					logger.debug("get Adv: but provide type[" + advReqt.getProviderId() + "] not fit");
+                    continue;
+				}
+				adsFlag.setHasProvider(true);
+				sortValue += 1;
+                if(level < LevelEntity.PROVIDER){
+                    level = LevelEntity.PROVIDER;
+                }
+
+			}
+			
+			//比较栏目是否符合
+			List<String> catagoryList = schedule.getCatagorys();
+			if(catagoryList != null && catagoryList.size()>0){
+				Set<String> set = new HashSet<>();
+				if(StringUtils.isNotEmpty(advReqt.getCatagoryId())){
+					if(!catagoryList.contains(advReqt.getCatagoryId())){
+						logger.debug("get Adv: but catagoryList type[" + advReqt.getCatagoryId() + "] not fit");
+						continue;
+					}	
+					set.add(advReqt.getCatagoryId());
+				}else{
+					boolean result = false;
+					for(String catagory : catagoryList){
+						if(columnSet != null && columnSet.contains(catagory)){
+							set.add(catagory);
+							result = true;
+							break;
+						}
+					}
+					if(!result){
+						logger.debug("get Adv: but catagoryList type[" + advReqt.getCatagoryId() + "] not fit");
+						continue;					
+					}
+				}
+				adsFlag.setHasCategory(true);
+				matchSet.put("category", set);
+				sortValue += 1;
+                if(level < LevelEntity.COLUMN){
+                    level = LevelEntity.COLUMN;
+                }
+
+			}
+			
+			//比较用户特征是否符合
+			List<String> featureList = schedule.getFeatures();
+			if(featureList != null && featureList.size()>0){
+			    Set<String> isMixed = new HashSet<String>();
+				if(userRedis != null && userRedis.getUserFeature()!=null){
+				    isMixed = isMixed(featureList,userRedis.getUserFeature());
+					if(isMixed.size() == 0){
+						logger.debug("get Adv: but featureList type[" + advReqt.getClientId() + "] not fit");
+	                    continue;
+					}
+				}else{
+					logger.debug("get Adv: but no times ");
+					continue;
+				}
+				adsFlag.setHasFeature(true);
+				sortValue += 1;
+                //将重复用户特征的编码保存用于上报KEY
+                matchSet.put("feature", isMixed);
+                if(level < LevelEntity.FEATURE){
+                    level = LevelEntity.FEATURE;
+                }
+
+			}
+			
+			//用户组
+			List<String> userGroupList = schedule.getUserGroups();
+			if(userGroupList != null && userGroupList.size()>0){
+			    Set<String> isMixed = new HashSet<String>();
+				if(userRedis != null && userRedis.getUserGroup()!=null){
+				    isMixed = isMixed(userGroupList,userRedis.getUserGroup());
+					if(isMixed.size() == 0){
+						logger.debug("get Adv: but userGroupList type[" + advReqt.getClientId() + "] not fit");
+	                    continue;
+					}
+				}else{
+					logger.debug("get Adv: but no times ");
+					continue;
+				}
+				sortValue += 1;
+				adsFlag.setHasUserGroup(true); 
+				//将重复用户组的编码保存用于上报KEY
+				
+				matchSet.put("userGroup", isMixed);
+                if(level < LevelEntity.USER_GROUP){
+                    level = LevelEntity.USER_GROUP;
+                }
+
+			}
+			//比较终端是否符合
+			List<String> terminalList = schedule.getTerminals();
+			if(terminalList != null && terminalList.size() > 0){
+			    if(!terminalList.contains(advReqt.getDeviceType())){
+                    logger.debug("get Adv: but device type[" + advReqt.getDeviceType() + "] not fit");
+                    continue;
+                }
+                adsFlag.setHasDeviceType(true);
+                sortValue += 1;
+                if(level < LevelEntity.DEVICE_TYPE){
+                    level = LevelEntity.DEVICE_TYPE;
+                }
+
+			}
+			//判断用户数据是否符合
+			List<String> userDataUrlList = schedule.getUserDataUrls();
+			if(userDataUrlList != null && userDataUrlList.size() > 0){
+			    boolean isMatch = false;
+			    for(String id : userDataUrlList){
+		            String userData = redisUtil.getUserData(id,advReqt.getClientId());
+		            if(!"".equals(userData)){
+		                isMatch = true;
+		                break;
+		            }
+			    }
+			    if(!isMatch){
+                    continue;
+			    }
+			    sortValue += 1;
+	            if(level < LevelEntity.USER_DATA){
+	                level = LevelEntity.USER_DATA;
+	            }
+			}
+			//判断关键字是否符合
+			List<String> keywordList = schedule.getKeyWords();
+			if(keywordList != null && keywordList.size() > 0){
+				Set<String> set = new HashSet<>();
+		        boolean isMatch = false;
+                if(programlist != null && StringUtils.isNotEmpty(programlist.getProgramName())){
+                    String programName = programlist.getProgramName();
+                    for(String keyword : keywordList){
+                        if(programName.contains(keyword)){
+                        	set.add(keyword);
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if(!isMatch && program != null && StringUtils.isNotEmpty(program.getContentName())){
+                    String contentName = program.getContentName();
+                    for(String keyword : keywordList){
+                        if(contentName.contains(keyword)){
+                        	set.add(keyword);
+                            isMatch = true;
+                            break;
+                        }
+                    }
+                }
+                if(!isMatch){
+                    logger.debug("get Adv: but do not match program");
+                    continue;
+                }
+                adsFlag.setHasKeyword(true);
+                matchSet.put("keyword", set);
+			}
+			//判断次数
+			/*if(schedule.getFreqType() != null){
+				int times = redisUtil.getCheckTimes(schedule, advReqt.getClientId(), redisUtil.GET);
+				if(schedule.getExposureTimes()<=times){
+					logger.debug("get Adv: but no times ");
+					continue;
+				}
+			}*/
+			schedule.setHigherLevel(level);
+			adsFlag.setMatchSet(matchSet);
+			schedule.setAdsFlag(adsFlag);
+			schedule.setSortValue(sortValue);
+			scheduleList.add(schedule);
+			
+		}
+		Collections.sort(scheduleList);
+		return scheduleList;
+	}
+	
+	
+	/**
+	 * 获取素材
+	 * @param advReqt
+	 * @param scheduleList
+	 * @return
+	 */
+	//@CheckTime()
+	public List<Item> getMaterial(AdvREQT advReqt , List<ScheduleRedis> scheduleList, List<Object> subAdvType ){
+		List<Item> itemList = new ArrayList<Item>();
+		Long reqNum = advReqt.getReqNum();
+		String clientId = advReqt.getClientId();
+		String nginxPath = redisUtil.getSysParameter("nginxPath");
+		String videoPath = redisUtil.getSysParameter("videoPath");
+		String picPath = redisUtil.getSysParameter("picPath");
+		String reportUrl = redisUtil.getSysParameter("reportUrl");
+		if(scheduleList != null && scheduleList.size()>0){
+			for(int i = 0;i<scheduleList.size(); i++){
+				String advSonType = scheduleList.get(i).getAdvSonType();
+				if(subAdvType.contains(advSonType)){
+				    ScheduleRedis schedule = scheduleList.get(i);
+				    //获取排期策略中的频道编码，用于返回对象中相对应的参数
+				    String channelIds = getChannelIds(schedule);
+					List<MaterialRedis> materialList = redisUtil.findMaterialsRedis(schedule);
+					//当素材是视频且请求参数中含有format参数时进行匹配
+					List<MaterialRedis> returnList = new ArrayList<>();
+					if(materialList != null && materialList.size() > 0){
+                        returnList = judegeFormate(materialList,advReqt);
+                    }
+					
+					//针对素材检查按总投放次数以及按用户投放次数
+					checkMaterialTime(returnList, schedule, advReqt);
+					
+					returnList = getMaterialByStyle( reqNum,  schedule, returnList,  clientId);
+					List<Item> reportItems = new ArrayList<>();//用于上报
+					for(MaterialRedis materialRedis : returnList){
+				        Item item = new Item(materialRedis, schedule, advReqt,nginxPath,videoPath,picPath,reportUrl);
+				        item.setChannelIds(channelIds);
+				        if(schedule.getFreqType() != null){
+                        	redisUtil.getMaterialCheckTimes(materialRedis.getMaterialId(), clientId, redisUtil.SET, schedule);
+                        }
+				        itemList.add(item);
+				        reportItems.add(item);
+					}
+					//需上报
+					checkReport(schedule,reportItems,reportUrl);
+					//redisUtil.getCheckTimes(schedule, advReqt.getClientId(), redisUtil.SET);
+					if(!"-1".equals(advReqt.getChannelId())){
+					    subAdvType.remove(advSonType);
+					}
+				}else if(subAdvType.contains("000")){//以广告位外部编码请求
+					ScheduleRedis schedule = scheduleList.get(0);
+					//获取排期策略中的频道编码，用于返回对象中相对应的参数
+					String channelIds = getChannelIds(schedule);
+					List<MaterialRedis> materialList = redisUtil.findMaterialsRedis(schedule);
+					List<MaterialRedis> returnList = new ArrayList<>();
+					//当素材是视频且请求参数中含有format参数时进行匹配
+					if(materialList != null && materialList.size() > 0){
+					    returnList = judegeFormate(materialList,advReqt);
+					}
+					
+					//针对素材检查按总投放次数以及按用户投放次数
+					checkMaterialTime(returnList, schedule, advReqt);
+					
+					returnList = getMaterialByStyle( reqNum,  schedule, returnList,  clientId);
+					List<Item> reportItems = new ArrayList<>();//用于上报
+					for(MaterialRedis materialRedis : returnList){
+                        Item item = new Item(materialRedis, schedule, advReqt,nginxPath,videoPath,picPath,reportUrl);
+                        item.setChannelIds(channelIds);
+                        itemList.add(item);
+                        if(schedule.getFreqType() != null){
+                        	redisUtil.getMaterialCheckTimes(materialRedis.getMaterialId(), clientId, redisUtil.SET, schedule);
+                        }
+                        reportItems.add(item);
+					}
+					//需上报
+					checkReport(schedule,reportItems,reportUrl);
+					//redisUtil.getCheckTimes(schedule, advReqt.getClientId(), redisUtil.SET);
+					if(!"-1".equals(advReqt.getChannelId())){
+					    subAdvType.remove("000");
+					}
+				}
+				if(subAdvType.size() == 0){
+				    break;
+				}
+			}
+		}
+		return itemList;
+	}
+
+	/**
+	 * 检查是否需要上报，需要则上报
+	 * @param schedule
+	 * @param reportItems
+	 * @param reportUrl
+	 */
+	public void checkReport(ScheduleRedis schedule,List<Item> reportItems,String reportUrl){
+		try {
+			if(schedule.getNeedreport() != null && schedule.getNeedreport().longValue() == 0 && reportItems.size() > 0){
+				StringBuilder param = new StringBuilder();
+				for(int j = 0;j<reportItems.size();j++){
+					Item item = reportItems.get(j);
+					if(j == reportItems.size()-1){
+						param.append(item.getReportParam() + "0");
+					}else{
+						param.append(item.getReportParam() + "0\\r\\n");
+					}
+					item.setShowUrl(null);
+					item.setClickUrl(null);
+				}
+				String reportPath = reportUrl + "?" + param.toString();
+				logger.debug("reportPath====" + reportPath);
+				SSLClient.sendGet(reportPath, "");
+			}
+			
+		} catch (Exception e) {
+			logger.error("report faild");
+		}
+		
+	}
+	
+	/**
+	 * 根据请求数量和播放模式返回素材
+	 * @param reqNum
+	 * @param scheduleList
+	 * @return
+	 */
+	//@CheckTime()
+	public List<MaterialRedis> getMaterialByStyle(Long reqNum, ScheduleRedis schedule,
+			List<MaterialRedis> materialList, String clientId){
+		List<MaterialRedis> list = new ArrayList<MaterialRedis>();
+		String style =  schedule.getStyle();
+		if(style.equals("1")){//随机
+			Collections.shuffle(materialList);
+			if(materialList.size()>reqNum&&reqNum.intValue()!=-1){
+				if(reqNum.longValue() == 0l){
+					reqNum = 1l;
+				}
+				for(int i = 0; i<reqNum; i++){
+					list.add(materialList.get(i));
+				}
+			}else{
+				list.addAll(materialList);
+			}
+		}
+		else if(style.equals("0")){//顺序
+			if(materialList.size()>reqNum && materialList.size()!= 0 &&
+					reqNum.intValue()!=-1 && reqNum.longValue() != 0l){
+				int index = redisUtil.getMaterialIndex(schedule.getTaskId(), clientId);
+				for(int i = 0; i<reqNum; i++){
+					index++;
+					while (index > materialList.size()) {
+						index = index - materialList.size();
+					}
+					list.add(materialList.get(index-1));
+				}
+				redisUtil.setMaterialIndex(schedule.getTaskId(), clientId, index);
+			}else{
+				list.addAll(materialList);
+			}
+		}
+		else if(style.equals("3")){//轮转
+		    if(materialList.size() > 0){
+		        Long index = curIndex(materialList.size(),schedule.getTurnTime()*60);
+		        if(index >= materialList.size()){
+		            index = index - materialList.size();
+		        }
+		        int cur = Integer.parseInt(String.valueOf(index));
+		        list.add(materialList.get(cur));		        
+		    }
+		}
+		return list;
+	}
+	
+	/**
+	 * 判断当前时间是在投放时间内
+	 * @param schedule
+	 * @return
+	 */
+	public boolean checkTime(ScheduleRedis schedule){
+		boolean flag = true;
+		Long nowTime = new Date().getTime();
+		List<Long> tempList = schedule.getScopeList();
+		List<Long> scopeList = new ArrayList<Long>();
+		scopeList.addAll(tempList);
+		if(scopeList != null){
+			if(scopeList.contains(nowTime)){
+				return false;
+			}
+			scopeList.add(nowTime);
+			Collections.sort(scopeList);
+			int index = scopeList.indexOf(nowTime);
+			if(index%2!=0){
+				return false;
+			}
+		}
+		return flag;
+	}
+	
+	/**
+	 * 查找请求的区域码
+	 * @return
+	 */
+	public String getReqRegion(UserRedis userRedis, AdvREQT advReqt ){
+		String regionCode = "";
+		if(StringUtils.isEmpty(advReqt.getRegionCode())){
+			if(userRedis != null){
+				if(StringUtils.isEmpty(userRedis.getAreaId())){
+					if(StringUtils.isNotEmpty(userRedis.getCompanyId())){
+						regionCode = redisUtil.getCompanyRegion(userRedis.getCompanyId());
+					}
+				}else {
+					regionCode = userRedis.getAreaId();
+				}
+			}
+			
+		}else{
+			regionCode = advReqt.getRegionCode();
+		}
+		return regionCode;
+	}
+	
+    /**
+     * 获取相关的网络ID用于匹配排期策略
+     * @param schedule
+     * @return
+     */
+    public List<String> getScheduleNetwork(ScheduleRedis schedule){
+         if(schedule.getNetworks() != null && schedule.getNetworks().size()>0){
+                return schedule.getNetworks();
+         }else{
+             if(StringUtils.isNotEmpty(schedule.getCompanyId()) 
+                     && !"operationCenter".equals(schedule.getCompanyId())){
+                 return redisUtil.getNetworkByScheudle(schedule.getCompanyId());
+             }
+         }
+         return null;
+    }
+	
+	/**
+	 * 如果未按区域投放，获取运营商下的所有区域
+	 * @param schedule
+	 * @return
+	 */
+	public List<String> getScheduleRegion(ScheduleRedis schedule){
+		 if(schedule.getAreas() != null && schedule.getAreas().size()>0){
+		     List<String> regionCodes = schedule.getAreas();
+		     List<String> regions = new ArrayList<>();
+		     for(String regionCode:regionCodes){
+		         List<String> regionRedis = redisUtil.getSonRegion(regionCode);
+		         regions.add(regionCode);
+		         regions.addAll(regionRedis);
+		     }
+			 return regions;
+		 }else{
+			 if(StringUtils.isNotEmpty(schedule.getCompanyId()) 
+			         && !"operationCenter".equals(schedule.getCompanyId())){
+				 return redisUtil.getRegionByScheudle(schedule.getCompanyId());
+			 }
+		 }
+		 return null;
+	}
+	
+	
+	/**
+	 * 当前时间计算轮转时间
+	 * @param size
+	 * @param turnTime
+	 * @return
+	 */
+	public long curIndex(int size, int turnTime){
+		Long time = new Date().getTime()/1000;
+		Long flag = time/turnTime;
+		return flag%size;
+	}
+	
+	/**
+	 * 判断两个集合是否有相同的
+	 * @param list
+	 * @param list2
+	 * @return
+	 */
+	public Set<String> isMixed(List<String> list, List<String> list2){
+		Set<String> set = new HashSet<String>();
+		for(String str : list){
+		    for(String str1 : list2){
+		        if(str.equals(str1)){
+		            set.add(str);
+		            break;
+		        }
+		    }
+		}
+		return set;
+	}
+	
+
+  
+    /**
+     * 获取符合频道条件排期绑定的频道编码，用于item数据channelIds的返回
+     * @param schedule
+     * @return
+     */
+    public String getChannelIds(ScheduleRedis schedule){
+        String channelIds = "";
+        if(schedule.getAdsFlag()!=null && schedule.getAdsFlag().getMatchSet()!=null){
+            Set<String> channelList = schedule.getAdsFlag().getMatchSet().get("channel");
+            if(channelList!= null&&channelList.size()>0){
+                for(String channel : channelList){
+                    channelIds = channelIds + channel + ",";
+                }
+            }
+            if(!"".equals(channelIds)){
+                channelIds = channelIds.substring(0,channelIds.length()-1);
+            }
+        }
+        return channelIds;
+    }
+    /**
+     * 从获取的素材列表中筛选出请求对应的视频格式的类型
+     * @param materialList
+     * @param advReqt
+     * @return
+     */
+    public List<MaterialRedis> judegeFormate(List<MaterialRedis> materialList,AdvREQT advReqt){
+        List<MaterialRedis> returnList = new ArrayList<>();
+        for(int j = materialList.size()-1;j>=0;j--){
+            MaterialRedis material = materialList.get(j);
+            if(StringUtils.isNotEmpty(advReqt.getFormat()) 
+                    && StringUtils.isNotEmpty(material.getFormat())
+                    && !"null".equals(material.getFormat())){
+                if(advReqt.getFormat().equals(material.getFormat())){
+                    returnList.add(material);
+                }
+            }else{
+                returnList.add(material);
+            }
+        }
+        return returnList;
+    }
+
+    /**
+     * 针对素材检查按总投放次数以及按用户投放次数
+     * @param returnList
+     * @param scheduleRedis
+     */
+    public void checkMaterialTime(List<MaterialRedis> returnList,ScheduleRedis sc,AdvREQT reqt){
+    	if(sc.getFreqType() != null){
+    		try {
+    			int size = returnList.size();
+    			for(int i=size-1;i>=0;i--){
+    				MaterialRedis material = returnList.get(i);
+    				int count = redisUtil.getMaterialCheckTimes(material.getMaterialId(), 
+    						reqt.getClientId(), RedisUtil.GET, sc);
+    				if(sc.getExposureTimes()<=count){
+    					returnList.remove(i);
+    					logger.debug("the materialId [" + material.getMaterialId() + "] reach to the maximum value to get");
+    				}
+    			}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
+    }
+    
+	/**
+	 * 获取不到广告时上报
+	 * @param schedule
+	 * @param reportItems
+	 * @param reportUrl
+	 */
+	public void toReport(AdvREQT request,String errorCode,String errorDesc){
+		try {
+			
+			String reportUrl = redisUtil.getSysParameter("reportUrl");
+			
+	        String deviceCode = request.getDeviceCode() == null ? "" : request.getDeviceCode();
+	        String deviceType = request.getDeviceType() == null ? "" : request.getDeviceType();
+	        String networkId = request.getNetworkId() == null ? "" : request.getNetworkId();
+	        String regionCode = request.getRegionCode() == null ? "" : request.getRegionCode();
+			
+			String advId = request.getAdvId() == null ? "" : request.getAdvId();
+			String providerId = request.getProviderId() == null ? "" : request.getProviderId();
+			String catagory = request.getCatagoryId() == null ? "" : request.getCatagoryId();
+			String contentId = request.getContentId() == null ? "" : request.getContentId();
+			String folderContentId = request.getFolderContentId() == null ? "" : request.getFolderContentId();
+			String channelId = request.getChannelId() == null ? "" : request.getChannelId();
+			
+			String param = deviceCode + "|" + deviceType + "|" + networkId + "|" + regionCode + "|0x22|"
+					+ advId + "^" + providerId + "^" + catagory + "^" + contentId + "^" + folderContentId 
+					+ "^" + channelId + "^" + errorCode + "^" + errorDesc;
+			String reportPath = reportUrl + "?" + param;
+			logger.debug("reportPath====" + reportPath);
+			SSLClient.sendGet(reportPath, "");
+		} catch (Exception e) {
+			logger.error("report faild");
+		}
+		
+	}
+    
+}
